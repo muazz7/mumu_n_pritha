@@ -183,10 +183,40 @@ if (heroImg) {
   };
 }
 
+/* ══════════ HOW IT WORKS MODAL INTERACTIVITY ══════════ */
+const howItWorksModal = document.getElementById('how-it-works-modal');
+const howItWorksClose = document.getElementById('how-it-works-close-btn');
+
+function openHowItWorksModal(e) {
+  if (e) e.preventDefault();
+  howItWorksModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeHowItWorksModal() {
+  howItWorksModal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+if (howItWorksClose) {
+  howItWorksClose.addEventListener('click', closeHowItWorksModal);
+}
+if (howItWorksModal) {
+  howItWorksModal.addEventListener('click', (e) => {
+    if (e.target === howItWorksModal) closeHowItWorksModal();
+  });
+}
+
 /* ══════════ SMOOTH ANCHOR SCROLL ══════════ */
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', (e) => {
-    const target = document.querySelector(anchor.getAttribute('href'));
+    const href = anchor.getAttribute('href');
+    if (href === '#how-it-works') {
+      e.preventDefault();
+      openHowItWorksModal();
+      return;
+    }
+    const target = document.querySelector(href);
     if (target) {
       e.preventDefault();
       const navH = navbar.offsetHeight;
@@ -247,6 +277,11 @@ document.addEventListener('click', (e) => {
   const trigger = e.target.closest('a, button, .dish-card');
   if (!trigger) return;
 
+  // Ignore clicks inside modal overlays
+  if (trigger.closest('.modal-overlay')) {
+    return;
+  }
+
   // Ignore navigation section scrolls (links starting with # followed by letters)
   if (trigger.tagName === 'A') {
     const href = trigger.getAttribute('href');
@@ -262,7 +297,8 @@ document.addEventListener('click', (e) => {
     trigger.classList.contains('carousel-btn') ||
     trigger.classList.contains('filter-tab') ||
     trigger.id === 'modal-close-btn' ||
-    trigger.id === 'modal-submit-btn'
+    trigger.id === 'modal-submit-btn' ||
+    trigger.classList.contains('modal-close')
   ) {
     return;
   }
