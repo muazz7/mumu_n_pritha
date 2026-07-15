@@ -74,18 +74,18 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
 /* ══════════ DISHES DATA ══════════ */
 const dishes = [
-  { name: 'Butter Chicken', cook: "Meena's Kitchen", price: '$12.50', rating: '4.9', emoji: '🍛', type: 'non-veg' },
-  { name: 'Palak Paneer',   cook: "Meena's Kitchen", price: '$10.00', rating: '4.8', emoji: '🥘', type: 'veg' },
-  { name: 'Tacos de Carnitas', cook: 'Carlos & Maria', price: '$11.00', rating: '5.0', emoji: '🌮', type: 'non-veg' },
-  { name: 'Vegan Buddha Bowl', cook: 'Green Roots Co.', price: '$9.50', rating: '4.7', emoji: '🥗', type: 'vegan' },
-  { name: 'Beef Biryani',   cook: "Aisha's Table", price: '$14.00', rating: '4.9', emoji: '🍚', type: 'non-veg' },
-  { name: 'Lemon Tart',     cook: 'Sweet Corner',    price: '$7.50', rating: '4.8', emoji: '🍮', type: 'dessert' },
-  { name: 'Shakshuka',      cook: "Aisha's Table",   price: '$10.50', rating: '4.7', emoji: '🍳', type: 'veg' },
-  { name: 'Chocolate Lava', cook: 'Sweet Corner',    price: '$8.00', rating: '5.0', emoji: '🍫', type: 'dessert' },
-  { name: 'Pad Thai',       cook: "Suki's Wok",      price: '$11.50', rating: '4.8', emoji: '🍜', type: 'non-veg' },
-  { name: 'Falafel Bowl',   cook: 'Zara\'s Mezze',   price: '$9.00', rating: '4.6', emoji: '🧆', type: 'vegan' },
-  { name: 'Dal Makhani',    cook: "Meena's Kitchen",  price: '$9.50', rating: '4.9', emoji: '🫕', type: 'veg' },
-  { name: 'Tres Leches',    cook: 'Carlos & Maria',  price: '$7.00', rating: '4.9', emoji: '🍰', type: 'dessert' },
+  { name: 'Butter Chicken', cook: "Meena's Kitchen", price: '৳1200', rating: '4.9', emoji: '🍛', type: 'non-veg' },
+  { name: 'Palak Paneer',   cook: "Meena's Kitchen", price: '৳1000', rating: '4.8', emoji: '🥘', type: 'veg' },
+  { name: 'Tacos de Carnitas', cook: 'Carlos & Maria', price: '৳1100', rating: '5.0', emoji: '🌮', type: 'non-veg' },
+  { name: 'Vegan Buddha Bowl', cook: 'Green Roots Co.', price: '৳900',  rating: '4.7', emoji: '🥗', type: 'vegan' },
+  { name: 'Beef Biryani',   cook: "Aisha's Table", price: '৳1400', rating: '4.9', emoji: '🍚', type: 'non-veg' },
+  { name: 'Lemon Tart',     cook: 'Sweet Corner',    price: '৳700',  rating: '4.8', emoji: '🍮', type: 'dessert' },
+  { name: 'Shakshuka',      cook: "Aisha's Table",   price: '৳1000', rating: '4.7', emoji: '🍳', type: 'veg' },
+  { name: 'Chocolate Lava', cook: 'Sweet Corner',    price: '৳800',  rating: '5.0', emoji: '🍫', type: 'dessert' },
+  { name: 'Pad Thai',       cook: "Suki's Wok",      price: '৳1100', rating: '4.8', emoji: '🍜', type: 'non-veg' },
+  { name: 'Falafel Bowl',   cook: 'Zara\'s Mezze',   price: '৳900',  rating: '4.6', emoji: '🧆', type: 'vegan' },
+  { name: 'Dal Makhani',    cook: "Meena's Kitchen",  price: '৳900',  rating: '4.9', emoji: '🫕', type: 'veg' },
+  { name: 'Tres Leches',    cook: 'Carlos & Maria',  price: '৳700',  rating: '4.9', emoji: '🍰', type: 'dessert' },
 ];
 
 const typeLabelMap = { veg: '🌿 Veg', 'non-veg': '🍗 Non-Veg', vegan: '🥦 Vegan', dessert: '🍮 Dessert' };
@@ -216,3 +216,80 @@ window.addEventListener('scroll', () => {
     if (link) link.classList.toggle('active-link', scrollPos >= top && scrollPos < bottom);
   });
 }, { passive: true });
+
+/* ══════════ COMING SOON POPUP INTERACTIVITY ══════════ */
+const modal = document.getElementById('coming-soon-modal');
+const modalClose = document.getElementById('modal-close-btn');
+const emailInput = document.getElementById('modal-email-input');
+const submitBtn = document.getElementById('modal-submit-btn');
+const feedbackMsg = document.getElementById('modal-feedback-msg');
+
+function openModal(e) {
+  if (e) e.preventDefault();
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+  feedbackMsg.textContent = '';
+  emailInput.value = '';
+}
+
+modalClose.addEventListener('click', closeModal);
+modal.addEventListener('click', (e) => {
+  if (e.target === modal) closeModal();
+});
+
+// Event delegation to catch clicks on any link or button
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('a, button, .dish-card');
+  if (!trigger) return;
+
+  // Ignore navigation section scrolls (links starting with # followed by letters)
+  if (trigger.tagName === 'A') {
+    const href = trigger.getAttribute('href');
+    if (href && href.startsWith('#') && href.length > 1) {
+      return; 
+    }
+  }
+
+  // Ignore internal interaction elements
+  if (
+    trigger.id === 'hamburger' ||
+    trigger.closest('.hamburger') ||
+    trigger.classList.contains('carousel-btn') ||
+    trigger.classList.contains('filter-tab') ||
+    trigger.id === 'modal-close-btn' ||
+    trigger.id === 'modal-submit-btn'
+  ) {
+    return;
+  }
+
+  openModal(e);
+});
+
+// Email notification submission
+submitBtn.addEventListener('click', () => {
+  const email = emailInput.value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    feedbackMsg.textContent = 'Please enter a valid email address.';
+    feedbackMsg.className = 'modal-feedback error';
+    return;
+  }
+  
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting...';
+  
+  setTimeout(() => {
+    feedbackMsg.textContent = 'Thank you! We will notify you when we launch.';
+    feedbackMsg.className = 'modal-feedback success';
+    submitBtn.textContent = 'Notify Me';
+    submitBtn.disabled = false;
+    emailInput.value = '';
+    
+    setTimeout(closeModal, 2000);
+  }, 1000);
+});
+
